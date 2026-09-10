@@ -60,7 +60,9 @@ class MyAppState extends ChangeNotifier {
 }
 
 class MyHomePage extends StatefulWidget {
-  // 공개 Widget은 부모에게 key를 전달해야 한다는 최신 린트를 따라 추가했다.
+  // 이전: 생성자를 선언하지 않아 암시적 MyHomePage()만 사용할 수 있었다.
+  // 변경: const MyHomePage({super.key})로 부모 Widget에 key를 전달한다.
+  // 이유: 공개 Widget 생성자에 key를 제공하라는 최신 Flutter 린트를 충족한다.
   const MyHomePage({super.key});
 
   @override
@@ -86,7 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    // Flutter 3.18 이후 폐기된 surfaceVariant를 공식 대체 색상으로 변경했다.
+    // 이전: colorScheme.surfaceVariant를 배경색으로 사용했다.
+    // 변경: colorScheme.surfaceContainerHighest를 사용한다.
+    // 이유: surfaceVariant는 Flutter 3.18 이후 폐기되어 공식 대체 색상이 필요하다.
     var mainArea = ColoredBox(
       color: colorScheme.surfaceContainerHighest,
       child: AnimatedSwitcher(
@@ -103,7 +107,10 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Expanded(child: mainArea),
                 SafeArea(
-                  // Material 3 앱에 권장되는 NavigationBar API로 교체했다.
+                  // 이전: BottomNavigationBar의 items, currentIndex, onTap을 사용했다.
+                  // 변경: NavigationBar의 destinations, selectedIndex,
+                  // onDestinationSelected를 사용한다.
+                  // 이유: NavigationBar가 Material 3 앱에 권장되는 하단 탐색 API다.
                   child: NavigationBar(
                     destinations: [
                       NavigationDestination(
@@ -160,7 +167,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class GeneratorPage extends StatelessWidget {
-  // 공개 Widget 생성자에 key를 제공해 위젯 교체 시 상태 식별이 가능하게 했다.
+  // 이전: 생성자를 선언하지 않아 key를 받을 수 없었다.
+  // 변경: const GeneratorPage({super.key}) 생성자를 추가했다.
+  // 이유: 최신 린트를 충족하고 위젯 교체 시 Flutter가 대상을 식별할 수 있게 한다.
   const GeneratorPage({super.key});
 
   @override
@@ -210,7 +219,9 @@ class GeneratorPage extends StatelessWidget {
 }
 
 class BigCard extends StatelessWidget {
-  // 중복된 Key? 선언 대신 최신 super parameter 문법을 사용했다.
+  // 이전: Key? key를 받고 : super(key: key)로 다시 전달했다.
+  // 변경: 생성자 매개변수에서 super.key로 바로 전달한다.
+  // 이유: 같은 동작을 중복 없이 표현하는 최신 Dart super parameter 문법이다.
   const BigCard({super.key, required this.pair});
 
   final WordPair pair;
@@ -249,7 +260,9 @@ class BigCard extends StatelessWidget {
 }
 
 class FavoritesPage extends StatelessWidget {
-  // 공개 Widget 생성자에 key 전달 경로를 추가해 최신 린트를 충족했다.
+  // 이전: 생성자를 선언하지 않아 key를 받을 수 없었다.
+  // 변경: const FavoritesPage({super.key}) 생성자를 추가했다.
+  // 이유: 공개 Widget 생성자에 key 전달 경로를 제공하라는 최신 린트를 충족한다.
   const FavoritesPage({super.key});
 
   @override
@@ -298,7 +311,9 @@ class FavoritesPage extends StatelessWidget {
 }
 
 class HistoryListView extends StatefulWidget {
-  // 명시적 Key?와 super 호출을 간결한 super parameter 문법으로 바꿨다.
+  // 이전: const HistoryListView({Key? key}) : super(key: key)를 사용했다.
+  // 변경: const HistoryListView({super.key})로 간결하게 표현한다.
+  // 이유: 동작은 유지하면서 최신 Dart super parameter 문법을 적용한다.
   const HistoryListView({super.key});
 
   @override
