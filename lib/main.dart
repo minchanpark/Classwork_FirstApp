@@ -60,11 +60,6 @@ class MyAppState extends ChangeNotifier {
 }
 
 class MyHomePage extends StatefulWidget {
-  // 이전: 생성자를 선언하지 않아 암시적 MyHomePage()만 사용할 수 있었다.
-  // 변경: const MyHomePage({super.key})로 부모 Widget에 key를 전달한다.
-  // 이유: 공개 Widget 생성자에 key를 제공하라는 최신 Flutter 린트를 충족한다.
-  const MyHomePage({super.key});
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -88,9 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    // 이전: colorScheme.surfaceVariant를 배경색으로 사용했다.
-    // 변경: colorScheme.surfaceContainerHighest를 사용한다.
-    // 이유: surfaceVariant는 Flutter 3.18 이후 폐기되어 공식 대체 색상이 필요하다.
+    // The container for the current page, with its background color
+    // and subtle switching animation.
     var mainArea = ColoredBox(
       color: colorScheme.surfaceContainerHighest,
       child: AnimatedSwitcher(
@@ -103,14 +97,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 450) {
+            // Use a more mobile-friendly layout with NavigationBar
+            // on narrow screens.
             return Column(
               children: [
                 Expanded(child: mainArea),
                 SafeArea(
-                  // 이전: BottomNavigationBar의 items, currentIndex, onTap을 사용했다.
-                  // 변경: NavigationBar의 destinations, selectedIndex,
-                  // onDestinationSelected를 사용한다.
-                  // 이유: NavigationBar가 Material 3 앱에 권장되는 하단 탐색 API다.
                   child: NavigationBar(
                     destinations: [
                       NavigationDestination(
@@ -129,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   ),
-                ),
+                )
               ],
             );
           } else {
@@ -167,11 +159,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class GeneratorPage extends StatelessWidget {
-  // 이전: 생성자를 선언하지 않아 key를 받을 수 없었다.
-  // 변경: const GeneratorPage({super.key}) 생성자를 추가했다.
-  // 이유: 최신 린트를 충족하고 위젯 교체 시 Flutter가 대상을 식별할 수 있게 한다.
-  const GeneratorPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -188,7 +175,10 @@ class GeneratorPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(flex: 3, child: HistoryListView()),
+          Expanded(
+            flex: 3,
+            child: HistoryListView(),
+          ),
           SizedBox(height: 10),
           BigCard(pair: pair),
           SizedBox(height: 10),
@@ -219,10 +209,10 @@ class GeneratorPage extends StatelessWidget {
 }
 
 class BigCard extends StatelessWidget {
-  // 이전: Key? key를 받고 : super(key: key)로 다시 전달했다.
-  // 변경: 생성자 매개변수에서 super.key로 바로 전달한다.
-  // 이유: 같은 동작을 중복 없이 표현하는 최신 Dart super parameter 문법이다.
-  const BigCard({super.key, required this.pair});
+  const BigCard({
+    Key? key,
+    required this.pair,
+  }) : super(key: key);
 
   final WordPair pair;
 
@@ -239,6 +229,8 @@ class BigCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: AnimatedSize(
           duration: Duration(milliseconds: 200),
+          // Make sure that the compound word wraps correctly when the window
+          // is too narrow.
           child: MergeSemantics(
             child: Wrap(
               children: [
@@ -249,7 +241,7 @@ class BigCard extends StatelessWidget {
                 Text(
                   pair.second,
                   style: style.copyWith(fontWeight: FontWeight.bold),
-                ),
+                )
               ],
             ),
           ),
@@ -260,18 +252,15 @@ class BigCard extends StatelessWidget {
 }
 
 class FavoritesPage extends StatelessWidget {
-  // 이전: 생성자를 선언하지 않아 key를 받을 수 없었다.
-  // 변경: const FavoritesPage({super.key}) 생성자를 추가했다.
-  // 이유: 공개 Widget 생성자에 key 전달 경로를 제공하라는 최신 린트를 충족한다.
-  const FavoritesPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var appState = context.watch<MyAppState>();
 
     if (appState.favorites.isEmpty) {
-      return Center(child: Text('No favorites yet.'));
+      return Center(
+        child: Text('No favorites yet.'),
+      );
     }
 
     return Column(
@@ -279,9 +268,11 @@ class FavoritesPage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(30),
-          child: Text('You have ${appState.favorites.length} favorites:'),
+          child: Text('You have '
+              '${appState.favorites.length} favorites:'),
         ),
         Expanded(
+          // Make better use of wide windows with a grid.
           child: GridView(
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 400,
@@ -311,10 +302,7 @@ class FavoritesPage extends StatelessWidget {
 }
 
 class HistoryListView extends StatefulWidget {
-  // 이전: const HistoryListView({Key? key}) : super(key: key)를 사용했다.
-  // 변경: const HistoryListView({super.key})로 간결하게 표현한다.
-  // 이유: 동작은 유지하면서 최신 Dart super parameter 문법을 적용한다.
-  const HistoryListView({super.key});
+  const HistoryListView({Key? key}) : super(key: key);
 
   @override
   State<HistoryListView> createState() => _HistoryListViewState();
@@ -327,7 +315,9 @@ class _HistoryListViewState extends State<HistoryListView> {
 
   /// Used to "fade out" the history items at the top, to suggest continuation.
   static const Gradient _maskingGradient = LinearGradient(
+    // This gradient goes from fully transparent to fully opaque black...
     colors: [Colors.transparent, Colors.black],
+    // ... from the top (transparent) to half (0.5) of the way to the bottom.
     stops: [0.0, 0.5],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -340,6 +330,8 @@ class _HistoryListViewState extends State<HistoryListView> {
 
     return ShaderMask(
       shaderCallback: (bounds) => _maskingGradient.createShader(bounds),
+      // This blend mode takes the opacity of the shader (i.e. our gradient)
+      // and applies it to the destination (i.e. our animated list).
       blendMode: BlendMode.dstIn,
       child: AnimatedList(
         key: _key,
